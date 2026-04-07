@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    width: 300px;
+    background: #0a1018;
+    color: #c8dff0;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 12px;
+  }
+
+  .header {
+    background: #050c14;
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid #1a2840;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo {
+    font-size: 15px;
+    font-weight: 600;
+    color: #4a9eff;
+    letter-spacing: 0.14em;
+  }
+  .status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #2a2a2a;
+    margin-left: auto;
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+  .status-dot.online { background: #4adf8a; box-shadow: 0 0 6px #4adf8a; }
+  .status-dot.error  { background: #ff5555; }
+  .status-dot.checking { background: #ffd166; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .body { padding: 16px; }
+
+  .field { margin-bottom: 14px; }
+  label {
+    display: block;
+    font-size: 10px;
+    color: #4a6a8a;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  input {
+    width: 100%;
+    background: #050c14;
+    border: 1px solid #1a2840;
+    border-radius: 4px;
+    padding: 7px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #c8dff0;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus { border-color: #4a9eff; }
+
+  .btn-row { display: flex; gap: 8px; margin-top: 4px; }
+
+  button {
+    flex: 1;
+    padding: 8px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+  .btn-check {
+    background: #1a2e47;
+    color: #4a9eff;
+    border: 1px solid #2a4a6a;
+  }
+  .btn-check:hover { background: #1f3a5a; }
+  .btn-save {
+    background: #4a9eff;
+    color: #050c14;
+  }
+  .btn-save:hover { background: #6ab4ff; }
+
+  .msg {
+    margin-top: 10px;
+    font-size: 11px;
+    line-height: 1.5;
+    min-height: 16px;
+    color: #4a6a8a;
+  }
+  .msg.ok  { color: #4adf8a; }
+  .msg.err { color: #ff6655; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #1a2840;
+    margin: 14px 0;
+  }
+
+  .models-list {
+    font-size: 10px;
+    color: #3a5a7a;
+    line-height: 1.8;
+  }
+  .models-list span {
+    display: inline-block;
+    background: #0d1a2a;
+    border: 1px solid #1a3050;
+    border-radius: 8px;
+    padding: 1px 8px;
+    margin: 2px 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .models-list span:hover { border-color: #4a9eff; color: #4a9eff; }
+
+  .tip {
+    font-size: 10px;
+    color: #2a4a6a;
+    line-height: 1.6;
+    margin-top: 10px;
+  }
+  .tip code {
+    background: #050c14;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #4a7aaa;
+    font-size: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">DEEPREAD</div>
+  <div class="status-dot" id="dot"></div>
+</div>
+
+<div class="body">
+  <div class="field">
+    <label>Ollama Host</label>
+    <input id="host" type="text" value="http://localhost:11434" />
+  </div>
+  <div class="field">
+    <label>Model</label>
+    <input id="model" type="text" placeholder="qwen2.5:14b" />
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-check" id="checkBtn">test connection</button>
+    <button class="btn-save" id="saveBtn">save</button>
+  </div>
+
+  <div class="msg" id="msg"></div>
+
+  <div id="models-wrap" style="display:none">
+    <hr class="divider">
+    <div style="font-size:10px;color:#3a5a7a;margin-bottom:6px;letter-spacing:0.08em;">AVAILABLE MODELS — click to select</div>
+    <div class="models-list" id="modelsList"></div>
+  </div>
+
+  <hr class="divider">
+  <div style="font-size:10px;color:#3a5a7a;margin-bottom:8px;letter-spacing:0.08em;">OPEN A PDF</div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <input id="pdf-url" class="config-input" type="text" placeholder="Paste any PDF URL…" style="flex:1;font-size:11px;" />
+    <button class="btn-check" id="openPdfBtn" style="white-space:nowrap;flex-shrink:0;">open →</button>
+  </div>
+  <div style="font-size:10px;color:#1a3a5a;margin-top:6px;">Or click 📖 next to any PDF link on a webpage</div>
+
+  <hr class="divider">
+  <div class="tip">
+    On any webpage, <strong style="color:#4a6a8a">select text</strong> and click the bubble.<br><br>
+    If not working, restart Ollama with:<br>
+    <code>OLLAMA_ORIGINS=* ollama serve</code>
+  </div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "DeepRead",
+  "version": "1.1",
+  "description": "Select any text on any webpage or PDF — ask your local Ollama model. Go as deep as you want.",
+
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs"
+  ],
+
+  "host_permissions": [
+    "http://localhost:11434/*",
+    "http://127.0.0.1:11434/*",
+    "<all_urls>"
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "32": "icons/icon.png"
+    }
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": ["reader/reader.html"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+
+  "icons": {
+    "32": "icons/icon.png"
+  }
+}
