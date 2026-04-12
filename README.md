@@ -173,15 +173,24 @@ Every other AI reading tool sends your text to a remote server. DeepRead runs en
 ---
 
 ## Notes features in action (was deep reading on browser chatgpt)
-1. Click on the deepread output to save the Q&A.
-![1](https://github.com/user-attachments/assets/7f2fe4ad-98b7-42d9-8585-82c6378cd023)
 
-2.  Navigate to extensions on the tool bar and click open my notes.
-![2](https://github.com/user-attachments/assets/f6bfab62-aec0-48d1-b22a-49eacdb54ca4)
+1. Click on the 📌 save note button on any answer card.
 
-3.  Sample view of how the notes viewer works on browser.
-![3](https://github.com/user-attachments/assets/60cd31bc-730c-4336-88e9-7ffa47663a09)
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/7f2fe4ad-98b7-42d9-8585-82c6378cd023" width="600" />
+</div>
 
+2. Navigate to the extension in your toolbar and click **📚 open my notes**.
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/e8e20418-5941-442a-95e2-d366fe530314" width="400" />
+</div>
+
+3. Your notes viewer — all saved Q&As in one place.
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/60cd31bc-730c-4336-88e9-7ffa47663a09" width="600" />
+</div>
 
 
 ## Roadmap
