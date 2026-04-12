@@ -4,7 +4,7 @@
 
 DeepRead is a Chrome extension that lets you highlight any word, sentence, or paragraph while reading — and instantly get an explanation from a local AI model running on your machine. Ask follow-up questions on the answers themselves, drilling down recursively without ever leaving the page.
 
-No API keys. No subscriptions. No data leaving your computer.
+No API keys. No subscriptions. No data leaving your computer. Powered by Ollama running locally on your machine.
 
 ---
 
