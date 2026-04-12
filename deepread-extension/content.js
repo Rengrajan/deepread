@@ -9,6 +9,7 @@
   let settings = { host: 'http://localhost:11434', model: 'qwen2.5:14b' };
   let cardCounter = 0;
   const streamBuffers = {}; // cardId -> accumulated text
+  const questionMap = {};  // cardId -> selected question text
 
   // Load settings
   chrome.runtime.sendMessage({ type: 'GET_SETTINGS' }, (res) => {
@@ -211,6 +212,7 @@
   function createCard(question, container, depth, context) {
     const cardId = `dr-${++cardCounter}`;
     streamBuffers[cardId] = '';
+    questionMap[cardId] = question;
 
     const depthClass = depth >= 3 ? 'depth-3' : depth === 2 ? 'depth-2' : '';
     const card = document.createElement('div');
@@ -340,6 +342,39 @@ Answer clearly and insightfully, grounded in the document above:`;
       });
 
       card.querySelector('.deepread-ask-row').style.display = 'flex';
+
+      // ── Save note button ──
+      const saveBtn = document.createElement('button');
+      saveBtn.className = 'deepread-save-btn';
+      saveBtn.textContent = '📌 save note';
+      card.querySelector('.deepread-footer').appendChild(saveBtn);
+
+      saveBtn.addEventListener('click', () => {
+        saveBtn.textContent = '✓ saved';
+        saveBtn.classList.add('saved');
+        saveBtn.disabled = true;
+
+        const note = {
+          id: Date.now(),
+          url: window.location.href,
+          title: document.title || window.location.hostname,
+          selected: questionMap[cardId] || '',
+          answer: fullText || '',
+          savedAt: new Date().toISOString()
+        };
+
+        // Write directly to storage from content script — no background needed
+        chrome.storage.local.get({ notes: [] }, (data) => {
+          const notes = [note, ...(data.notes || [])];
+          chrome.storage.local.set({ notes }, () => {
+            if (chrome.runtime.lastError) {
+              console.error('[DeepRead] Save failed:', chrome.runtime.lastError);
+            } else {
+              console.log('[DeepRead] Note saved! Total:', notes.length);
+            }
+          });
+        });
+      });
     }
   }
 

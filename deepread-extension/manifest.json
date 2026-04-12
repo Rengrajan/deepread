@@ -1,11 +1,12 @@
 {
   "manifest_version": 3,
   "name": "DeepRead",
-  "version": "1.1",
+  "version": "1.2",
   "description": "Select any text on any webpage or PDF — ask your local Ollama model. Go as deep as you want.",
 
   "permissions": [
     "storage",
+    "unlimitedStorage",
     "activeTab",
     "tabs"
   ],
@@ -38,7 +39,14 @@
 
   "web_accessible_resources": [
     {
-      "resources": ["reader/reader.html"],
+      "resources": [
+        "reader/reader.html",
+        "reader/reader.js",
+        "notes/notes.html",
+        "notes/notes.js",
+        "lib/pdf.min.js",
+        "lib/pdf.worker.min.js"
+      ],
       "matches": ["<all_urls>"]
     }
   ],

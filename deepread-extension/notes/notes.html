@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeepRead — My Notes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --ink: #0a1018;
+    --accent: #4a9eff;
+    --green: #4adf8a;
+    --highlight: #ffd166;
+    --text: #b8d0e8;
+    --dim: #4a6a8a;
+    --card-bg: #0d1520;
+    --border: #1a2840;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--ink);
+    color: var(--text);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.8;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: #050c14;
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.16em;
+    flex-shrink: 0;
+  }
+  .logo span {
+    color: var(--green);
+    margin-left: 6px;
+  }
+  .note-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--dim);
+    flex-shrink: 0;
+  }
+
+  /* search */
+  #search {
+    flex: 1;
+    max-width: 360px;
+    background: #080e17;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+    margin-left: auto;
+  }
+  #search:focus { border-color: var(--accent); }
+  #search::placeholder { color: #2a4a6a; }
+
+  /* ── Layout ── */
+  .stage {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 36px 28px 100px;
+  }
+
+  /* ── Empty state ── */
+  #empty {
+    text-align: center;
+    margin-top: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    color: #1a3050;
+    font-size: 13px;
+    line-height: 2;
+    display: none;
+  }
+  #empty .big { font-size: 40px; margin-bottom: 16px; }
+
+  /* ── Note card ── */
+  .note-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    animation: noteIn 0.2s ease;
+  }
+  .note-card:hover { border-color: #2a4a6a; }
+
+  @keyframes noteIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .note-header {
+    padding: 12px 16px 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .note-header:hover .note-selected { color: #c8dff0; }
+
+  .note-meta {
+    flex: 1;
+    min-width: 0;
+  }
+  .note-source {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .note-source a {
+    color: var(--accent);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 300px;
+  }
+  .note-source a:hover { opacity: 1; }
+
+  .note-date {
+    color: #1a3050;
+    flex-shrink: 0;
+  }
+
+  .note-selected {
+    font-style: italic;
+    color: #8aaac8;
+    font-size: 15px;
+    line-height: 1.5;
+    transition: color 0.15s;
+  }
+
+  .note-selected mark {
+    background: rgba(255,209,102,0.15);
+    color: #c8a840;
+    border-radius: 2px;
+    padding: 0 2px;
+    font-style: normal;
+  }
+
+  .note-toggle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--dim);
+    flex-shrink: 0;
+    transition: transform 0.2s, color 0.15s;
+  }
+  .note-card.expanded .note-toggle { transform: rotate(90deg); color: var(--accent); }
+
+  /* answer body */
+  .note-answer {
+    display: none;
+    padding: 12px 16px 16px;
+    border-top: 1px solid var(--border);
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: #8aaac8;
+  }
+  .note-card.expanded .note-answer { display: block; }
+  .note-answer p { margin-bottom: 10px; }
+  .note-answer p:last-child { margin-bottom: 0; }
+
+  /* actions */
+  .note-actions {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 12px;
+    padding-top: 10px;
+  }
+  .note-action-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--dim);
+    padding: 3px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .note-action-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .note-action-btn.delete:hover { border-color: #ff5555; color: #ff5555; }
+
+  /* group by date */
+  .date-group-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #1a3050;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 20px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .date-group-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #111e2e;
+  }
+  .date-group-label:first-child { padding-top: 0; }
+
+  /* export bar */
+  .export-bar {
+    position: fixed;
+    bottom: 24px;
+    right: 28px;
+    display: flex;
+    gap: 8px;
+  }
+  .export-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: #0d1520;
+    border: 1px solid #1a2840;
+    color: var(--dim);
+    padding: 8px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  }
+  .export-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* no results */
+  .no-results {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #1a3050;
+    text-align: center;
+    padding: 40px 0;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">DEEPREAD <span>NOTES</span></div>
+  <div class="note-count" id="note-count"></div>
+  <input type="text" id="search" placeholder="search notes…" />
+  <button id="refresh-btn" style="background:transparent;border:1px solid #1a2840;color:#2a4a6a;font-family:JetBrains Mono,monospace;font-size:11px;padding:5px 12px;border-radius:12px;cursor:pointer;flex-shrink:0;" title="refresh">↺ refresh</button>
+</header>
+
+<div class="stage">
+  <div id="empty">
+    <div class="big">📭</div>
+    No notes yet.<br>
+    While reading, click <strong style="color:#2a4a6a">📌 save note</strong> on any answer card.
+  </div>
+  <div class="no-results" id="no-results">No notes match your search.</div>
+  <div id="notes-list"></div>
+</div>
+
+<div class="export-bar">
+  <button class="export-btn" id="export-md">↓ export markdown</button>
+  <button class="export-btn" id="export-json">↓ export JSON</button>
+</div>
+
+<script src="notes.js"></script>
+</body>
+</html>

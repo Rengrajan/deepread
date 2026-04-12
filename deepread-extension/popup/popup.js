@@ -83,3 +83,9 @@ function msg(text, type) {
   msgEl.textContent = text;
   msgEl.className = `msg ${type}`;
 }
+
+// Open notes viewer
+document.getElementById('openNotesBtn').addEventListener('click', () => {
+  chrome.runtime.sendMessage({ type: 'OPEN_NOTES' });
+  window.close();
+});

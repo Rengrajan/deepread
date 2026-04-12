@@ -39,6 +39,42 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
+  // Save a note
+  if (message.type === 'SAVE_NOTE') {
+    chrome.storage.local.get({ notes: [] }, (data) => {
+      const notes = [message.note, ...(data.notes || [])];
+      chrome.storage.local.set({ notes }, () => {
+        console.log('[DeepRead] Note saved. Total notes:', notes.length);
+        sendResponse({ ok: true });
+      });
+    });
+    return true;
+  }
+
+  // Get all notes
+  if (message.type === 'GET_NOTES') {
+    chrome.storage.local.get({ notes: [] }, (data) => sendResponse(data.notes));
+    return true;
+  }
+
+  // Delete a note
+  if (message.type === 'DELETE_NOTE') {
+    chrome.storage.local.get({ notes: [] }, (data) => {
+      const notes = data.notes.filter(n => n.id !== message.id);
+      chrome.storage.local.set({ notes }, () => sendResponse({ ok: true }));
+    });
+    return true;
+  }
+
+  // Open notes viewer
+  if (message.type === 'OPEN_NOTES') {
+    const url = chrome.runtime.getURL('notes/notes.html');
+    // tabs.query doesn't work with chrome-extension:// URLs, just create new tab
+    chrome.tabs.create({ url });
+    sendResponse({ ok: true });
+    return true;
+  }
+
   // Open PDF in our reader tab
   if (message.type === 'OPEN_PDF_READER') {
     const readerUrl = chrome.runtime.getURL('reader/reader.html') + '?pdf=' + encodeURIComponent(message.url);

@@ -362,6 +362,39 @@ function handleChunk({ cardId, text, done }) {
       footer.appendChild(btn);
     });
     card.querySelector('.deepread-ask-row').style.display = 'flex';
+
+    // Save note button
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'deepread-sug';
+    saveBtn.textContent = '📌 save note';
+    saveBtn.style.cssText = 'border-color:#1a3a20;color:#3a7a4a;';
+    card.querySelector('.deepread-footer').appendChild(saveBtn);
+
+    saveBtn.addEventListener('click', () => {
+      saveBtn.textContent = '✓ saved';
+      saveBtn.disabled = true;
+      saveBtn.style.opacity = '0.5';
+
+      const note = {
+        id: Date.now(),
+        url: window.location.href,
+        title: document.title || 'PDF',
+        selected: question,
+        answer: streamBuffers[cardId] || '',
+        savedAt: new Date().toISOString()
+      };
+
+      chrome.storage.local.get({ notes: [] }, (data) => {
+        const notes = [note, ...(data.notes || [])];
+        chrome.storage.local.set({ notes }, () => {
+          if (chrome.runtime.lastError) {
+            console.error('[DeepRead] Save failed:', chrome.runtime.lastError);
+          } else {
+            console.log('[DeepRead] Note saved! Total:', notes.length);
+          }
+        });
+      });
+    });
   }
 }
 

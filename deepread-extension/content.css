@@ -215,3 +215,29 @@
 .deepread-wrapper {
   margin: 4px 0 8px;
 }
+
+/* ── Save note button ── */
+.deepread-save-btn {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  background: transparent;
+  border: 1px solid #1a3a20;
+  color: #3a7a4a;
+  padding: 3px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.deepread-save-btn:hover {
+  border-color: #4adf8a;
+  color: #4adf8a;
+  background: rgba(74,223,138,0.08);
+}
+.deepread-save-btn.saved {
+  border-color: #4adf8a;
+  color: #4adf8a;
+  opacity: 0.5;
+  cursor: default;
+}
