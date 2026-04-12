@@ -15,6 +15,7 @@ No API keys. No subscriptions. No data leaving your computer.
 3. An answer card appears inline, right below the paragraph you selected
 4. Select text inside the answer to go deeper — recursively, as many levels as you want
 5. Use suggested follow-ups or type your own questions
+6. Click **📌 save note** on any answer to save it to your notes
 
 Works on articles, Wikipedia, Substack, news, research papers, and any PDF via URL.
 
@@ -24,6 +25,8 @@ Works on articles, Wikipedia, Substack, news, research papers, and any PDF via U
 
 - **Inline answers** — cards appear right where you're reading, not in a sidebar
 - **Recursive drilling** — select text inside any answer to go deeper (depth 1 → 2 → 3)
+- **Save notes** — pin any answer with 📌 and revisit it anytime from your notes page
+- **Notes viewer** — browse, search, and export all your saved notes in one place
 - **PDF support** — paste any PDF URL into the popup to open it in DeepRead's reader
 - **Full page context** — the entire article is sent with every question, not just the selected words
 - **Streaming responses** — answers appear word by word as the model generates
@@ -97,6 +100,23 @@ Navigate to any article, blog post, Wikipedia page, or Substack. Select any text
 
 On any page with PDF links, a **📖** button appears next to each link — click it to open directly in DeepRead.
 
+### Saving notes
+
+When an answer finishes streaming, a **📌 save note** button appears at the bottom of the card. Click it to save the selected text and answer to your notes. The button turns to **✓ saved** to confirm.
+
+### Viewing your notes
+
+Click the DeepRead icon in the toolbar and hit **📚 open my notes**. Your notes page shows all saved answers grouped by date, with:
+
+- **Search** — filter notes by selected text, answer content, or source URL
+- **Expand/collapse** — click any note card to read the full answer
+- **Copy** — copy any answer to clipboard with one click
+- **Delete** — remove individual notes
+- **Export as Markdown** — download all notes as a `.md` file
+- **Export as JSON** — download all notes as a `.json` file
+
+Notes are stored locally in Chrome's extension storage — they never leave your machine.
+
 ---
 
 ## Recommended models
@@ -125,15 +145,18 @@ On any page with PDF links, a **📖** button appears next to each link — clic
 ```
 deepread-extension/
 ├── manifest.json        — Chrome extension config (Manifest V3)
-├── background.js        — Service worker: Ollama API calls and PDF fetching
-├── content.js           — Injected into pages: selection, bubble, answer cards
-├── content.css          — Styles for inline answer cards
+├── background.js        — Service worker: Ollama streaming, note storage, tab management
+├── content.js           — Injected into pages: selection, bubble, answer cards, save notes
+├── content.css          — Styles for inline answer cards and save button
 ├── popup/
-│   ├── popup.html       — Extension popup (settings)
+│   ├── popup.html       — Extension popup (settings + open notes button)
 │   └── popup.js
 ├── reader/
 │   ├── reader.html      — PDF reader page
-│   └── reader.js        — PDF parsing and DeepRead logic
+│   └── reader.js        — PDF parsing, DeepRead logic, save notes
+├── notes/
+│   ├── notes.html       — Notes viewer page
+│   └── notes.js         — Search, render, export, delete notes
 ├── lib/
 │   ├── pdf.min.js       — downloaded by setup.sh
 │   └── pdf.worker.min.js
@@ -151,8 +174,9 @@ Every other AI reading tool sends your text to a remote server. DeepRead runs en
 
 ## Roadmap
 
+- [x] Save notes from any answer card
+- [x] Notes viewer with search and export
 - [ ] Highlight persistence across sessions
-- [ ] Export Q&A threads as markdown notes
 - [ ] Right-click context menu trigger
 - [ ] Support for Anthropic / OpenAI API as optional backend
 - [ ] Firefox support
